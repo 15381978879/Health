@@ -1,0 +1,25 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.ltn.provider.Mapper.TeamsMapper">
+    <resultMap type="cn.ltn.service.bean.Teams" id="tmap">
+        <id property="teamid" column="teamid"/>
+        <result property="areaid" column="areaid"/>
+        <result property="capid" column="capid"/>
+        <result property="teamname" column="teamname"/>
+        <association property="users" javaType="cn.ltn.service.bean.Users">
+            <id property="uuid" column="uuid"/>
+            <result property="nickname" column="nickname"/>
+        </association>
+    </resultMap>
+    <select id="SelectAllTeams" resultMap="tmap">
+          select t.*,u.nickname from TB_TEAM t,TB_USER u where t.capid=u.uuid
+    </select>
+    <insert id="InsertTeam" parameterType="cn.ltn.service.bean.Teams">
+        insert into TB_TEAM(teamname,capid,areaid) values (#{teamname},#{capid},#{areaid})
+    </insert>
+    <select id="SelectAreaid" parameterType="integer" resultType="integer">
+        select areaid from TB_TEAM where teamid=#{teamid}
+    </select>
+</mapper>

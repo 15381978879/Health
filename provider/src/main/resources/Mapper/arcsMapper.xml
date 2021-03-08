@@ -1,0 +1,61 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.ltn.provider.Mapper.ArcsMapper">
+
+    <resultMap type="cn.ltn.service.bean.Arcs" id="amap">
+        <id property="arcid" column="arcid"/>
+        <result property="areaid" column="areaid"/>
+        <result property="pname" column="pname"/>
+        <result property="sex" column="sex"/>
+        <result property="birthdate" column="birthdate"/>
+        <result property="personid" column="personid"/>
+        <result property="areaid" column="areaid"/>
+        <result property="hbp" column="hbp"/>
+        <result property="dm" column="dm"/>
+        <result property="uuid" column="uuid"/>
+        <result property="teamid" column="teamid"/>
+        <result property="createtime" column="createtime"/>
+        <result property="ownid" column="ownid"/>
+        <association property="users" javaType="cn.ltn.service.bean.Users">
+            <id property="uuid" column="uuid"/>
+            <result property="username" column="username"/>
+            <result property="nickname" column="nickname"/>
+        </association>
+    </resultMap>
+
+    <select id="SelectAllArcs" resultMap="amap">
+        select a.*,u.nickname from TB_ARC a,TB_USER u where a.ownid=u.uuid
+    </select>
+    <select id="SelectArcsByUuid" parameterType="integer" resultMap="amap">
+        select a.*,u1.nickname,u2.username
+        from TB_ARC a,TB_USER u1,TB_USER u2
+        where a.ownid=#{uuid}
+        and a.ownid = u1.uuid
+        and a.uuid = u2.uuid
+    </select>
+    <select id="PersonidValidation" parameterType="String" resultType="cn.ltn.service.bean.Arcs">
+        select * from TB_ARC where personid=#{personid}
+    </select>
+    <insert id="InsertArcs" parameterType="cn.ltn.service.bean.Arcs">
+        insert into TB_ARC(arcid,pname,sex,birthdate,personid,areaid,hbp,dm,uuid,teamid,ownid) values (#{arcid},
+        #{pname},#{sex},#{birthdate},#{personid},#{areaid},#{hbp},#{dm},#{uuid},#{teamid},#{uuid})
+    </insert>
+    <select id="SelectEachByCapId" parameterType="integer" resultMap="amap">
+        select a.*,u1.username,u2.nickname from TB_USER u1,TB_USER u2,TB_ARC a
+        where a.uuid in (
+                          select uuid from TB_USER
+                          where teamid =(
+                                          select teamid from TB_USER
+                                          where uuid = #{uuid}
+                                           )
+                          )
+        and a.uuid=u1.uuid
+        and a.ownid=u2.uuid
+    </select>
+    <insert id="CapInsertArcs" parameterType="cn.ltn.service.bean.Arcs">
+        insert into TB_ARC(arcid,pname,sex,birthdate,personid,areaid,hbp,dm,uuid,teamid,ownid) values (#{arcid},
+        #{pname},#{sex},#{birthdate},#{personid},#{areaid},#{hbp},#{dm},#{uuid},#{teamid},#{ownid})
+    </insert>
+</mapper>

@@ -7,4 +7,31 @@
         select * from TB_USER
         where username = #{username}
     </select>
+    <select id="SelectAll" resultType="cn.ltn.service.bean.Users">
+        select * from TB_USER
+    </select>
+    <select id="SelectByName" resultType="cn.ltn.service.bean.Users">
+        select * from TB_USER
+        where nickname like concat('%' ,concat(#{nickname},'%'))
+    </select>
+    <insert id="InsertUser" parameterType="cn.ltn.service.bean.Users">
+        insert into TB_USER(username,password,nickname,status,roleid) values (#{username},#{password},#{nickname},#{status},#{roleid})
+    </insert>
+    <update id="UpdateUser" parameterType="cn.ltn.service.bean.Users">
+        update TB_USER set username=#{username},password=#{password},status=#{status},nickname=#{nickname},roleid=#{roleid} where uuid=#{uuid}
+    </update>
+    <select id="SelectCap" resultType="cn.ltn.service.bean.Users">
+        select * from TB_USER
+        where roleid = 2
+    </select>
+    <select id="SelectTeamid" parameterType="integer" resultType="integer">
+        select teamid from TB_USER where uuid=#{uuid}
+    </select>
+    <select id="GetTeamer" parameterType="integer" resultType="cn.ltn.service.bean.Users">
+        select * from TB_USER
+              where teamid=(
+                          select teamid from TB_USER
+                          where uuid = #{uuid}
+              )
+    </select>
 </mapper>
